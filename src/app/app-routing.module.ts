@@ -8,6 +8,7 @@ import { AuthRoutingModule } from './auth/auth.routing';
 
 
 
+
 const routes: Routes = [
 
   { path: '',redirectTo: 'dashboard', pathMatch: 'full'},

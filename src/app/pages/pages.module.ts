@@ -6,7 +6,8 @@ import { ProgressComponent } from './progress/progress.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SharedModule } from '../shared/shared.module';
 import { AppRoutingModule } from '../app-routing.module';
-
+import { ComponentesModule } from '../components/componentes.module';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -25,7 +26,10 @@ import { AppRoutingModule } from '../app-routing.module';
   imports: [
     CommonModule,
     SharedModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ComponentesModule,
+    FormsModule,
+    
   ]
 })
 export class PagesModule { }
