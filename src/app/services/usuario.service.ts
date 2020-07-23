@@ -7,6 +7,7 @@ import { map, tap, catchError } from 'rxjs/operators';
 import { log } from 'console';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
+import { Usuario } from '../models/usuario.model';
 
 const base_url = environment.base_url
 declare const gapi: any
@@ -16,13 +17,21 @@ declare const gapi: any
 export class UsuarioService {
   
   public auth2: any;
+  public usuario: Usuario
   constructor( private http: HttpClient,
                private router: Router,
                private ngZone: NgZone) { 
                  this.googleInit()
                }
-
   
+  cambiarImagen(img: string){
+    this.usuario.img = img
+    return true
+  }
+
+  get token():string{
+    return localStorage.getItem('token') || ''
+  }            
   googleInit(){
 
     return new Promise( resolve => {
@@ -56,15 +65,27 @@ export class UsuarioService {
   }
 
   validarToken() {
-    const token = localStorage.getItem('token') || '';
+
     return this.http.get(`${base_url}/login/renew`, {
             headers:{
-              'x-token' : token
+              'x-token' : this.token
             }}).pipe(
-              tap((resp: any) => {
+              map((resp: any) => {
+                
+                const {
+                    nombre,
+                    email,
+                    google,
+                    img = '',
+                    role,
+                    uid
+                } = resp.usuario
+                
+                this.usuario = new Usuario(nombre,email,img,google,role,uid);
+                
                 localStorage.setItem('token', resp.token);
+                return true
               }),
-              map( resp => true),
               catchError( error => of(false))
             )
   }
@@ -75,9 +96,27 @@ export class UsuarioService {
     
   }
 
+  actualizarPerfil( data: {email: string, nombre: string, role: string}) {
+    data = {
+      ...data,
+      role: this.usuario.role
+    }
+    return this.http.put(`${base_url}/usuarios/${this.usuario.uid}`, data, {
+      headers: {
+        'x-token' : this.token
+      }
+    })
+    .pipe(
+      map( (resp:any) => {
+        this.usuario.nombre = resp.usuario.nombre
+        this.usuario.email = resp.usuario.email
+        return true
+      })
+    )
+  }
+
   login( formData: Loginform){
 
-    console.log(formData.remember);
     
     if (formData.remember) {
       localStorage.setItem('email', formData.email)
@@ -106,6 +145,5 @@ export class UsuarioService {
           })
         );
   }
-  
 
 }
