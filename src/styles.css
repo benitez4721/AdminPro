@@ -10,4 +10,12 @@
     cursor: pointer
 }
 
+.w100 {
+    width: 100px;
+}
+
+.avatar {
+    width: 80px;
+    border-radius: 100%;
+}
 

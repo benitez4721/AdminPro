@@ -8,6 +8,7 @@ import { log } from 'console';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Usuario } from '../models/usuario.model';
+import { CargarUsuario } from '../interfaces/cargar-usuario.interface';
 
 const base_url = environment.base_url
 declare const gapi: any
@@ -24,14 +25,18 @@ export class UsuarioService {
                  this.googleInit()
                }
   
-  cambiarImagen(img: string){
-    this.usuario.img = img
-    return true
-  }
 
   get token():string{
     return localStorage.getItem('token') || ''
-  }            
+  }
+  
+  get headers(){
+    return {
+      headers: {
+        'x-token': this.token
+      }
+    }
+  }
   googleInit(){
 
     return new Promise( resolve => {
@@ -101,6 +106,8 @@ export class UsuarioService {
       ...data,
       role: this.usuario.role
     }
+    
+    
     return this.http.put(`${base_url}/usuarios/${this.usuario.uid}`, data, {
       headers: {
         'x-token' : this.token
@@ -144,6 +151,35 @@ export class UsuarioService {
             return true
           })
         );
+  }
+
+  cargarUsuarios( desde: number = 0){
+    const url = `${base_url}/usuarios?desde=${desde}`;
+
+    return this.http.get<CargarUsuario>(url, this.headers)
+      .pipe(
+        map(resp => {
+
+          const usuarios = resp.usuarios.map(
+             user => new Usuario(user.nombre,user.email,user.img,user.google,user.role,user.uid,'')
+          );
+          return {
+            total: resp.total,
+            usuarios
+          }
+        })
+      );
+
+  }
+
+  eliminarUsuario(usuario: Usuario) {
+    
+    return this.http.delete(`${base_url}/usuarios/${usuario.uid}`, this.headers);
+    
+  }
+
+  guardarUsuario( usuario: Usuario) {
+    return this.http.put(`${base_url}/usuarios/${usuario.uid}`, usuario, this.headers)
   }
 
 }

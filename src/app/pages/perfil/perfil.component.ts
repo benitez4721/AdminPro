@@ -34,7 +34,10 @@ export class PerfilComponent implements OnInit {
   }
 
   actualizarPerfil(){
+    console.log(this.perfilForm.value);
+
     this.user_s.actualizarPerfil( this.perfilForm.value)
+      
       .subscribe( resp => {
         Swal.fire('Guardado', 'Cambios Fueron guardados', 'success')
       },
