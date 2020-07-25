@@ -37,7 +37,8 @@ export class BusquedasService {
         termino: string = '' 
   ){
     const url = `${base_url}/buscar/${tipo}/${termino}`;
-
+    console.log(url);
+    
     return this.http.get<any[]>(url, this.headers)
       .pipe(
         map( (resp:any) => {
@@ -46,6 +47,14 @@ export class BusquedasService {
             case 'usuarios':
               return this.transformarUsuarios(resp.data)
               break;
+
+            case 'hospitales':
+              return resp.data
+              break;
+              
+            case 'medicos':
+              return resp.data
+              break;  
           
             default:
               return []
@@ -56,5 +65,11 @@ export class BusquedasService {
 
         })
       )
+  }
+
+  busquedaGlobal(termino: string){
+    const url = `${base_url}/buscar/${termino}`;
+    return this.http.get(url, this.headers)
+
   }
 }

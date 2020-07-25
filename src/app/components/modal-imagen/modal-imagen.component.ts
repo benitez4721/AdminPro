@@ -44,9 +44,10 @@ export class ModalImagenComponent implements OnInit {
   }
 
   subirImagen() {
-
+    
     const id = this.modal_s.id
     const tipo = this.modal_s.tipo
+    
     this.file_s.actualizarFoto(this.imagenSubir, tipo, id) 
       .then( img => {
         Swal.fire('Guardado', 'Imagen actualizada', 'success')
